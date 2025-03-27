@@ -26,9 +26,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 更新预览
     function updatePreview() {
-        posterTitle.textContent = titleInput.value;
-        posterAuthor.textContent = authorInput.value;
-        posterFooterText.textContent = footerTextInput.value;
+        // 设置标题（如果为空则使用默认值）
+        posterTitle.textContent = titleInput.value.trim() || 'AI新动向社群日报';
+        
+        // 设置作者（如果为空则隐藏）
+        posterAuthor.textContent = authorInput.value.trim();
+        posterAuthor.style.display = authorInput.value.trim() ? 'inline' : 'none';
+        
+        // 设置底部文案（如果为空则隐藏）
+        posterFooterText.textContent = footerTextInput.value.trim();
+        posterFooterText.style.display = footerTextInput.value.trim() ? 'inline' : 'none';
         
         // 将Markdown转换为HTML
         const markdownContent = contentInput.value;
@@ -43,8 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const reader = new FileReader();
             reader.onload = function(event) {
                 posterQrCode.src = event.target.result;
+                posterQrCode.style.display = 'block';
             };
             reader.readAsDataURL(file);
+        } else {
+            // 没有选择文件时隐藏二维码
+            posterQrCode.style.display = 'none';
         }
     });
     
@@ -74,9 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 初始预览
-    updatePreview();
-    
     // 自动调整内容区域高度
     function adjustTextareaHeight() {
         contentInput.style.height = 'auto';
@@ -84,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     contentInput.addEventListener('input', adjustTextareaHeight);
-    adjustTextareaHeight();
     
     // 示例Markdown内容
     const exampleMarkdown = `# 今日AI动态
@@ -111,5 +118,6 @@ print(result)
     
     // 设置示例内容
     contentInput.value = exampleMarkdown;
+    adjustTextareaHeight();
     updatePreview();
 });

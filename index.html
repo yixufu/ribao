@@ -17,15 +17,15 @@
                 <input type="text" id="title" value="AI新动向社群日报">
             </div>
             <div class="form-group">
-                <label for="author">作者名称</label>
-                <input type="text" id="author" value="AI日报编辑">
+                <label for="author">作者名称 (可选)</label>
+                <input type="text" id="author" placeholder="留空则不显示">
             </div>
             <div class="form-group">
-                <label for="footer-text">底部引流文案</label>
-                <input type="text" id="footer-text" value="扫码AI新动向社群">
+                <label for="footer-text">底部引流文案 (可选)</label>
+                <input type="text" id="footer-text" placeholder="留空则不显示" value="扫码AI新动向社群">
             </div>
             <div class="form-group">
-                <label for="qr-code">上传二维码 (建议200x200px)</label>
+                <label for="qr-code">上传二维码 (可选，建议200x200px)</label>
                 <input type="file" id="qr-code" accept="image/*">
             </div>
             <div class="form-group">
@@ -41,15 +41,15 @@
                     <h1 id="poster-title">AI新动向社群日报</h1>
                     <div class="date-author">
                         <span id="poster-date" class="date"></span>
-                        <span id="poster-author" class="author">AI日报编辑</span>
+                        <span id="poster-author" class="author"></span>
                     </div>
                 </div>
                 <div class="divider"></div>
                 <div id="poster-content" class="poster-content"></div>
                 <div class="divider"></div>
                 <div class="poster-footer">
-                    <span id="poster-footer-text" class="footer-text">扫码AI新动向社群</span>
-                    <img id="poster-qr-code" class="qr-code" src="" alt="社群二维码">
+                    <span id="poster-footer-text" class="footer-text"></span>
+                    <img id="poster-qr-code" class="qr-code" src="" alt="社群二维码" style="display:none;">
                 </div>
             </div>
             <button id="save-btn">保存为图片</button>
