@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentInput = document.getElementById('content');
     const previewBtn = document.getElementById('preview-btn');
     const saveBtn = document.getElementById('save-btn');
+    const removeImageBtn = document.getElementById('remove-image');
     
     const posterTitle = document.getElementById('poster-title');
     const posterDate = document.getElementById('poster-date');
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const posterContent = document.getElementById('poster-content');
     const posterFooterText = document.getElementById('poster-footer-text');
     const posterQrCode = document.getElementById('poster-qr-code');
-    
+
     // 设置当前日期
     function updateDate() {
         const now = new Date();
@@ -26,47 +27,50 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 更新预览
     function updatePreview() {
-        // 设置标题（如果为空则使用默认值）
-        posterTitle.textContent = titleInput.value.trim() || 'AI新动向社群日报';
-        
-        // 设置作者（如果为空则隐藏）
+        posterTitle.textContent = titleInput.value.trim() || 'AI新动向社群早报';
         posterAuthor.textContent = authorInput.value.trim();
         posterAuthor.style.display = authorInput.value.trim() ? 'inline' : 'none';
-        
-        // 设置底部文案（如果为空则隐藏）
         posterFooterText.textContent = footerTextInput.value.trim();
         posterFooterText.style.display = footerTextInput.value.trim() ? 'inline' : 'none';
         
-        // 将Markdown转换为HTML
         const markdownContent = contentInput.value;
         const htmlContent = marked.parse(markdownContent);
         posterContent.innerHTML = htmlContent;
     }
-    
-    // 上传二维码
+
+    // 处理图片上传
+    function handleImageUpload(file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            posterQrCode.src = event.target.result;
+            posterQrCode.style.display = 'block';
+            removeImageBtn.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // 删除图片
+    function removeImage() {
+        qrCodeInput.value = '';
+        posterQrCode.src = '';
+        posterQrCode.style.display = 'none';
+        removeImageBtn.style.display = 'none';
+    }
+
+    // 事件监听
     qrCodeInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                posterQrCode.src = event.target.result;
-                posterQrCode.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // 没有选择文件时隐藏二维码
-            posterQrCode.style.display = 'none';
+            handleImageUpload(file);
         }
     });
-    
-    // 点击预览按钮
+
+    removeImageBtn.addEventListener('click', removeImage);
     previewBtn.addEventListener('click', updatePreview);
-    
+
     // 保存为图片
     saveBtn.addEventListener('click', function() {
-        // 临时隐藏按钮
         saveBtn.style.display = 'none';
-        
         html2canvas(document.getElementById('poster'), {
             scale: 2,
             logging: false,
@@ -74,18 +78,15 @@ document.addEventListener('DOMContentLoaded', function() {
             allowTaint: true,
             backgroundColor: '#0a192f'
         }).then(canvas => {
-            // 恢复按钮显示
             saveBtn.style.display = 'block';
-            
-            // 创建下载链接
             const link = document.createElement('a');
-            link.download = `AI日报-${new Date().toISOString().slice(0, 10)}.png`;
+            link.download = `AI早报-${new Date().toISOString().slice(0, 10)}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
     });
-    
-    // 自动调整内容区域高度
+
+    // 自动调整文本域高度
     function adjustTextareaHeight() {
         contentInput.style.height = 'auto';
         contentInput.style.height = (contentInput.scrollHeight) + 'px';
@@ -93,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     contentInput.addEventListener('input', adjustTextareaHeight);
     
-    // 示例Markdown内容
+    // 示例内容
     const exampleMarkdown = `# 今日AI动态
 
 ## 重大新闻
@@ -116,7 +117,6 @@ print(result)
 
 [查看更多详情](https://example.com)`;
     
-    // 设置示例内容
     contentInput.value = exampleMarkdown;
     adjustTextareaHeight();
     updatePreview();
