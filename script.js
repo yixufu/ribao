@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 获取DOM元素
     const titleInput = document.getElementById('title');
     const authorInput = document.getElementById('author');
+    const showDateCheckbox = document.getElementById('show-date');
     const footerTextInput = document.getElementById('footer-text');
     const qrCodeInput = document.getElementById('qr-code');
     const contentInput = document.getElementById('content');
@@ -32,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
         posterAuthor.style.display = authorInput.value.trim() ? 'inline' : 'none';
         posterFooterText.textContent = footerTextInput.value.trim();
         posterFooterText.style.display = footerTextInput.value.trim() ? 'inline' : 'none';
+        
+        // 控制日期显示
+        posterDate.style.display = showDateCheckbox.checked ? 'inline' : 'none';
         
         const markdownContent = contentInput.value;
         const htmlContent = marked.parse(markdownContent);
@@ -67,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     removeImageBtn.addEventListener('click', removeImage);
     previewBtn.addEventListener('click', updatePreview);
+    showDateCheckbox.addEventListener('change', updatePreview);
 
     // 保存为图片
     saveBtn.addEventListener('click', function() {

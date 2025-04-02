@@ -20,6 +20,20 @@
     margin: 0;
 }
 
+/* 新增复选框样式 */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+}
+
 /* 原有基础样式 */
 * {
     margin: 0;
