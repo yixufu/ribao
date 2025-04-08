@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const poster = document.getElementById('poster');
     const posterTitle = document.getElementById('poster-title');
     const posterAuthor = document.getElementById('poster-author');
+    const posterAuthorText = document.getElementById('poster-author-text');
     const posterDateContainer = document.getElementById('poster-date-container');
     const textDateLine = document.querySelector('.text-date-line');
     const posterDateText = document.getElementById('poster-date-text');
@@ -120,7 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 更新作者
         posterAuthor.textContent = authorText;
-        posterAuthor.style.display = isAuthorVisible ? 'block' : 'none';
+        posterAuthorText.textContent = authorText;
+        posterAuthor.style.display = 'none'; // 默认隐藏
+        posterAuthorText.style.display = 'none'; // 默认隐藏
         posterFooterText.style.display = footerTextInput.value.trim() ? 'inline' : 'none';
 
         // 更新日期
@@ -128,13 +131,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 控制日期元素的可见性
         if (selectedStyle === 'text') {
-            textDateLine.style.display = isDateVisible ? 'block' : 'none';
+            textDateLine.style.display = isDateVisible ? 'flex' : 'none';
             posterDateContainer.style.display = 'none';
+            
+            // 对于文字样式，显示行内作者
+            if (isAuthorVisible) {
+                posterAuthorText.style.display = 'inline';
+            }
         } else {
+            // 日历样式
             textDateLine.style.display = 'none';
             posterDateContainer.style.display = isDateVisible ? 'flex' : 'none';
+            
+            // 显示作者在标题下方
+            if (isAuthorVisible) {
+                posterAuthor.style.display = 'block';
+            }
         }
-
+        
         // 解析Markdown内容
         const markdownContent = contentInput.value;
         try {

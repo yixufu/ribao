@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>早报图片生成器</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="header">
@@ -63,13 +64,18 @@
         <div class="preview-panel">
             <div id="poster" class="poster date-style-text">
                 <div class="poster-header">
+                    <div id="poster-date-container" class="calendar-date"></div>
                     <div class="title-author-group">
                         <h1 id="poster-title">AI新动向社群早报</h1>
-                        <span id="poster-author" class="author"></span>
                     </div>
-                    <div id="poster-date-container" class="calendar-date"></div>
+                    <div id="author-container" class="author-container">
+                        <div class="author-box">
+                            <span id="poster-author" class="author"></span>
+                        </div>
+                    </div>
                 </div>
                 <div class="text-date-line">
+                    <span id="poster-author-text" class="author"></span>
                     <span id="poster-date-text" class="date-text"></span>
                 </div>
                 <div class="divider"></div>

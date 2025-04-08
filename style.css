@@ -233,11 +233,14 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+    width: 100%;
 }
 
 .title-author-group {
     flex-grow: 1;
+    text-align: center;
+    min-width: 0;
 }
 
 #poster-title {
@@ -259,47 +262,70 @@ button:hover {
 /* --- Text Date Line --- */
 .text-date-line {
     display: none;
-    text-align: left;
-    margin: 5px 0 15px 0;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 8px 0; /* 进一步减小与标题的间距 */
     min-height: 18px;
     width: 100%;
     font-size: 14px;
     color: #8892b0;
 }
 
+.date-text {
+    display: inline-block;
+    text-align: right;
+}
+
 /* --- Calendar Date Container --- */
 #poster-date-container {
     display: none;
     flex-shrink: 0;
+    margin-left: 20px;
 }
 
 /* --- Style Variations Based on Selected Date Style --- */
 .poster.date-style-text .poster-header {
-    justify-content: center;
-    text-align: center;
+    flex-direction: column;
+    align-items: center;
 }
+
 .poster.date-style-text .title-author-group {
-     flex-grow: 0;
-     margin-right: 0;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0; /* 减小标题下方间距 */
 }
+
+.poster.date-style-text .author {
+    display: none;
+}
+
 .poster.date-style-text .text-date-line {
-    display: block;
+    display: flex;
 }
+
 .poster.date-style-text #poster-date-container {
     display: none;
 }
 
 .poster.date-style-calendar .poster-header {
     justify-content: space-between;
-    text-align: left;
 }
+
 .poster.date-style-calendar .title-author-group {
-    flex-grow: 1;
-    margin-right: 20px;
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
+    padding-right: 100px; /* 向左移动标题，大约一个字的长度 */
 }
+
+.poster.date-style-calendar .author-container {
+    display: none; /* 日历样式下不显示作者组件 */
+}
+
 .poster.date-style-calendar .text-date-line {
     display: none;
 }
+
 .poster.date-style-calendar #poster-date-container {
     display: flex;
 }
@@ -349,12 +375,13 @@ button:hover {
     min-height: 200px;
     padding: 10px 0;
     line-height: 1.8;
-    color: #ccd6f6; /* 主要内容颜色 */
+    color: #ccd6f6;
     font-size: 16px;
+    display: block !important;
 }
 
-/* --- 修复后的Markdown内容样式 --- */
-/* 标题 */
+/* --- Markdown content styling --- */
+/* Titles */
 .poster-content h1 {
     font-size: 26px;
     color: #64ffda;
@@ -372,21 +399,21 @@ button:hover {
     color: #64ffda;
     margin: 18px 0 10px;
 }
-.poster-content h4, 
-.poster-content h5, 
+.poster-content h4,
+.poster-content h5,
 .poster-content h6 {
     color: #64ffda;
     margin: 15px 0 8px;
 }
 
-/* 段落 */
+/* Paragraphs */
 .poster-content p {
     margin-bottom: 15px;
     color: #ccd6f6;
 }
 
-/* 列表 */
-.poster-content ul, 
+/* Lists */
+.poster-content ul,
 .poster-content ol {
     margin-left: 25px;
     margin-bottom: 15px;
@@ -398,7 +425,7 @@ button:hover {
     color: #ccd6f6;
 }
 
-/* 链接 */
+/* Links */
 .poster-content a {
     color: #64ffda;
     text-decoration: none;
@@ -410,7 +437,7 @@ button:hover {
     border-bottom-color: #e6f1ff;
 }
 
-/* 内联代码 */
+/* Inline Code */
 .poster-content code:not(pre code) {
     background-color: rgba(100, 255, 218, 0.1);
     color: #64ffda;
@@ -420,7 +447,7 @@ button:hover {
     font-size: 0.9em;
 }
 
-/* 代码块 */
+/* Code Blocks */
 .poster-content pre {
     background-color: rgba(10, 25, 47, 0.8);
     border: 1px solid rgba(100, 255, 218, 0.2);
@@ -438,7 +465,7 @@ button:hover {
     color: #ccd6f6;
 }
 
-/* 引用 */
+/* Blockquotes */
 .poster-content blockquote {
     border-left: 3px solid #64ffda;
     padding-left: 15px;
@@ -451,7 +478,7 @@ button:hover {
     color: #a8b2d1;
 }
 
-/* 图片 */
+/* Images */
 .poster-content img {
     max-width: 100%;
     height: auto;
@@ -513,20 +540,39 @@ button:hover {
     .editor-panel, .preview-panel { padding: 20px; }
     .poster { padding: 30px; }
     #poster-title { font-size: 28px; }
-    .poster.date-style-calendar .poster-header {
+
+    .poster-header {
         flex-direction: column;
         align-items: center;
+        gap: 10px;
     }
-    .poster.date-style-calendar .title-author-group {
-        margin-right: 0;
-        margin-bottom: 15px;
+
+    .title-author-group {
+        order: 1;
+        width: 100%;
         text-align: center;
     }
-    .calendar-date { width: 70px; height: 70px; }
-    .calendar-day { font-size: 24px; }
+
+    #poster-author {
+        text-align: center;
+    }
+
+    #poster-date-container {
+        order: 2;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
     .text-date-line {
         text-align: center;
+        order: 2;
+        margin: 10px 0;
+        flex-direction: column;
     }
+
+    .calendar-date { width: 70px; height: 70px; }
+    .calendar-day { font-size: 24px; }
+
     .poster-footer {
         flex-direction: column;
         text-align: center;
@@ -545,4 +591,36 @@ button:hover {
     input[type="text"], textarea { font-size: 15px; padding: 10px 12px; }
     .poster-content { font-size: 15px; }
     .qr-code { width: 70px; height: 70px; }
+}
+
+.author-container {
+    margin-top: 10px;
+}
+
+.author-box {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 0; /* 移除左右内边距 */
+    background: transparent; /* 移除背景色 */
+    border-radius: 0;
+}
+
+.author {
+    color: #94A3B8;
+    font-size: 0.9em;
+}
+
+/* 日历样式下的作者名称布局 */
+.date-style-calendar .author-container {
+    margin-top: 5px;
+    display: none; /* 确保日历样式下不显示作者容器 */
+}
+
+.date-style-calendar .title-author-group {
+    display: block; /* 改为块级显示，确保标题居中 */
+    text-align: center;
+}
+
+.date-style-calendar .author-box {
+    margin-top: 0;
 }
