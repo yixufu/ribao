@@ -1,5 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get DOM elements
+    // 检查marked库是否加载
+    function checkMarkedLoaded() {
+        if (typeof marked === 'undefined') {
+            console.error('Marked library not loaded, trying fallback');
+            return false;
+        }
+        return true;
+    }
+
+    // 获取DOM元素引用
     const titleInput = document.getElementById('title');
     const authorInput = document.getElementById('author');
     const showDateCheckbox = document.getElementById('show-date');
@@ -11,52 +20,45 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveBtn = document.getElementById('save-btn');
     const removeImageBtn = document.getElementById('remove-image');
 
-    // Poster elements
+    // 预览面板元素
     const poster = document.getElementById('poster');
     const posterTitle = document.getElementById('poster-title');
-    const titleAuthorGroup = document.querySelector('.title-author-group'); // Container for title and author
-    const posterAuthor = document.getElementById('poster-author'); // Author span inside the group
-    const posterDateContainer = document.getElementById('poster-date-container'); // Calendar container
-    const textDateLine = document.querySelector('.text-date-line'); // Container for text date
-    const posterDateText = document.getElementById('poster-date-text'); // Text date span
+    const posterAuthor = document.getElementById('poster-author');
+    const posterDateContainer = document.getElementById('poster-date-container');
+    const textDateLine = document.querySelector('.text-date-line');
+    const posterDateText = document.getElementById('poster-date-text');
     const posterContent = document.getElementById('poster-content');
     const posterFooterText = document.getElementById('poster-footer-text');
     const posterQrCode = document.getElementById('poster-qr-code');
 
-    // Get the currently selected date style ('text' or 'calendar')
+    // 获取当前选中的日期样式
     function getSelectedDateStyle() {
         return document.querySelector('input[name="date-style"]:checked').value;
     }
 
-    // Update the date display based on the selected style
+    // 更新日期显示
     function updateDate() {
         const now = new Date();
         const style = getSelectedDateStyle();
 
-        // Clear previous date content
         posterDateContainer.innerHTML = '';
         posterDateText.textContent = '';
-        posterDateContainer.classList.remove('calendar-date'); // Ensure calendar class is removed if not needed
+        posterDateContainer.classList.remove('calendar-date');
 
         if (style === 'text') {
-            // Style 1: Text style - Update the text date span
             const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
             posterDateText.textContent = now.toLocaleDateString('zh-CN', options);
         } else if (style === 'calendar') {
-            // Style 2: Calendar style - Build the calendar icon
-            // Get date components
-            const weekdayLong = now.toLocaleDateString('zh-CN', { weekday: 'long' }); // Get full "星期X"
+            const weekdayLong = now.toLocaleDateString('zh-CN', { weekday: 'long' });
             const day = now.getDate();
-            const month = now.toLocaleDateString('zh-CN', { month: 'short' }); // e.g., "4月"
+            const month = now.toLocaleDateString('zh-CN', { month: 'short' });
             const year = now.getFullYear();
 
-            // Add specific class for styling
             posterDateContainer.classList.add('calendar-date');
 
-            // Create elements for calendar display
             const weekdaySpan = document.createElement('span');
             weekdaySpan.className = 'calendar-weekday';
-            weekdaySpan.textContent = weekdayLong; // Use full "星期X"
+            weekdaySpan.textContent = weekdayLong;
 
             const daySpan = document.createElement('span');
             daySpan.className = 'calendar-day';
@@ -66,157 +68,160 @@ document.addEventListener('DOMContentLoaded', function() {
             monthYearSpan.className = 'calendar-month-year';
             monthYearSpan.textContent = `${month} / ${year}`;
 
-            // Append elements to the calendar container
             posterDateContainer.appendChild(weekdaySpan);
             posterDateContainer.appendChild(daySpan);
             posterDateContainer.appendChild(monthYearSpan);
         }
     }
 
-    // Update the entire preview panel based on editor inputs
+    // 简单的Markdown解析器（备用）
+    function simpleMarkdownParser(text) {
+        // 标题
+        text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+        text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+        text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+        
+        // 列表
+        text = text.replace(/^\* (.*$)/gm, '<li>$1</li>');
+        text = text.replace(/^\- (.*$)/gm, '<li>$1</li>');
+        text = text.replace(/^\+ (.*$)/gm, '<li>$1</li>');
+        text = text.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+        
+        // 链接
+        text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+        
+        // 代码块
+        text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        // 引用
+        text = text.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+        
+        // 段落
+        text = text.replace(/(^(?!<[a-z]).*$(?<!>))/gm, '<p>$1</p>');
+        
+        return text;
+    }
+
+    // 更新预览
     function updatePreview() {
         const selectedStyle = getSelectedDateStyle();
         const isDateVisible = showDateCheckbox.checked;
         const authorText = authorInput.value.trim();
-        const isAuthorVisible = !!authorText; // Check if author input is not empty
+        const isAuthorVisible = !!authorText;
 
-        // 1. Update poster container class for CSS styling
-        poster.className = 'poster'; // Reset classes
-        poster.classList.add(`date-style-${selectedStyle}`); // Add current style class
+        // 更新海报样式
+        poster.className = 'poster';
+        poster.classList.add(`date-style-${selectedStyle}`);
 
-        // 2. Update title, footer text
-        posterTitle.textContent = titleInput.value.trim() || 'AI新动向社群早报'; // Use default title if empty
+        // 更新标题和页脚
+        posterTitle.textContent = titleInput.value.trim() || 'AI新动向社群早报';
         posterFooterText.textContent = footerTextInput.value.trim();
 
-        // 3. Update Author display (independent of date style now)
+        // 更新作者
         posterAuthor.textContent = authorText;
-        posterAuthor.style.display = isAuthorVisible ? 'block' : 'none'; // Use 'block' for span styled as block
-
-        // 4. Update Footer Text display
+        posterAuthor.style.display = isAuthorVisible ? 'block' : 'none';
         posterFooterText.style.display = footerTextInput.value.trim() ? 'inline' : 'none';
 
-        // 5. Update Date display (calls function that handles both styles)
+        // 更新日期
         updateDate();
 
-        // 6. Control visibility of date elements based on style and checkbox
+        // 控制日期元素的可见性
         if (selectedStyle === 'text') {
-            // Show text date line if date is checked, hide calendar
             textDateLine.style.display = isDateVisible ? 'block' : 'none';
             posterDateContainer.style.display = 'none';
-        } else { // Calendar style
-            // Hide text date line, show calendar if date is checked
+        } else {
             textDateLine.style.display = 'none';
             posterDateContainer.style.display = isDateVisible ? 'flex' : 'none';
         }
 
-        // 7. Update markdown content
+        // 解析Markdown内容
         const markdownContent = contentInput.value;
         try {
-            // Use marked library to parse markdown to HTML
-            const htmlContent = marked.parse(markdownContent);
-            posterContent.innerHTML = htmlContent;
+            if (checkMarkedLoaded()) {
+                posterContent.innerHTML = marked.parse(markdownContent);
+            } else {
+                console.warn('Using fallback Markdown parser');
+                posterContent.innerHTML = simpleMarkdownParser(markdownContent);
+            }
         } catch (error) {
             console.error("Error parsing Markdown:", error);
-            posterContent.innerHTML = "<p style='color: red;'>Markdown 解析错误，请检查语法。</p>"; // Show error in preview
+            posterContent.innerHTML = "<p style='color: red;'>Markdown 解析错误，请检查语法。</p>";
         }
     }
 
-    // Handle image upload for QR code
+    // 处理图片上传
     function handleImageUpload(file) {
         const reader = new FileReader();
         reader.onload = function(event) {
             posterQrCode.src = event.target.result;
-            posterQrCode.style.display = 'block'; // Show image element
-            removeImageBtn.style.display = 'block'; // Show remove button
+            posterQrCode.style.display = 'block';
+            removeImageBtn.style.display = 'block';
         };
         reader.onerror = function() {
             console.error("Error reading file.");
-            posterQrCode.src = ''; // Clear src on error
-            posterQrCode.style.display = 'none'; // Hide image on error
+            posterQrCode.src = '';
+            posterQrCode.style.display = 'none';
             removeImageBtn.style.display = 'none';
             alert('图片加载失败。');
         }
         reader.readAsDataURL(file);
     }
 
-    // Remove the uploaded QR code image
+    // 删除图片
     function removeImage() {
-        qrCodeInput.value = ''; // Clear file input
-        posterQrCode.src = ''; // Clear image source
-        posterQrCode.style.display = 'none'; // Hide image element
-        removeImageBtn.style.display = 'none'; // Hide remove button
+        qrCodeInput.value = '';
+        posterQrCode.src = '';
+        posterQrCode.style.display = 'none';
+        removeImageBtn.style.display = 'none';
     }
 
-    // --- Event Listeners ---
-
-    // QR code input change
+    // 事件监听器
     qrCodeInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
-        if (file) {
-            handleImageUpload(file);
-        }
+        if (file) handleImageUpload(file);
     });
 
-    // Remove image button click
     removeImageBtn.addEventListener('click', removeImage);
-
-    // Preview button click
     previewBtn.addEventListener('click', updatePreview);
-
-    // Show date checkbox change
     showDateCheckbox.addEventListener('change', updatePreview);
+    dateStyleRadios.forEach(radio => radio.addEventListener('change', updatePreview));
 
-    // Date style radio buttons change
-    dateStyleRadios.forEach(radio => {
-        radio.addEventListener('change', updatePreview);
-    });
-
-    // Save poster as image button click
+    // 保存图片
     saveBtn.addEventListener('click', function() {
-        // Temporarily hide the save button itself to avoid capturing it
         const originalDisplayStyle = saveBtn.style.display;
         saveBtn.style.display = 'none';
 
-        // Use html2canvas to capture the poster element
         html2canvas(document.getElementById('poster'), {
-            scale: 2, // Increase scale for better resolution
-            logging: false, // Disable logging in console
-            useCORS: true, // Enable cross-origin resource sharing if needed
-            allowTaint: true, // Allow tainting the canvas
-            backgroundColor: '#0a192f' // Ensure background color is captured
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#0a192f'
         }).then(canvas => {
-            // Restore the save button display
             saveBtn.style.display = originalDisplayStyle;
-
-            // Create a link element to trigger download
             const link = document.createElement('a');
-            // Generate filename with date
             const timestamp = new Date().toISOString().slice(0, 10);
             link.download = `AI早报-${timestamp}.png`;
-            link.href = canvas.toDataURL('image/png'); // Get image data URL
-            link.click(); // Simulate click to download
+            link.href = canvas.toDataURL('image/png');
+            link.click();
         }).catch(err => {
-            console.error("截图失败 (Screenshot failed):", err);
-            // Restore the save button even if an error occurs
-             saveBtn.style.display = originalDisplayStyle;
-             alert("抱歉，生成图片时出错。请检查控制台获取更多信息。"); // Inform user
+            console.error("截图失败:", err);
+            saveBtn.style.display = originalDisplayStyle;
+            alert("抱歉，生成图片时出错。");
         });
     });
 
-    // Auto-adjust textarea height based on content
+    // 自动调整文本区域高度
     function adjustTextareaHeight() {
-        contentInput.style.height = 'auto'; // Reset height
-        // Set height to scroll height plus a small buffer if needed
+        contentInput.style.height = 'auto';
         contentInput.style.height = (contentInput.scrollHeight) + 'px';
     }
 
-    // Adjust height on input and window resize
     contentInput.addEventListener('input', adjustTextareaHeight);
-    window.addEventListener('resize', adjustTextareaHeight); // Adjust on resize too
+    window.addEventListener('resize', adjustTextareaHeight);
 
-    // --- Initial Setup ---
-
-    // Example Markdown content
+    // 初始化内容
     const exampleMarkdown = `# 今日AI动态
 
 ## 重大新闻
@@ -239,7 +244,7 @@ print(result)
 
 [查看更多详情](https://example.com)`;
 
-    contentInput.value = exampleMarkdown; // Set example content
-    adjustTextareaHeight(); // Initial height adjustment
-    updatePreview(); // Initial preview generation
+    contentInput.value = exampleMarkdown;
+    adjustTextareaHeight();
+    updatePreview();
 });
