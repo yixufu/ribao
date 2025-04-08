@@ -10,10 +10,9 @@
 </head>
 <body>
     <div class="header">
-        <img src="logo.png" alt="早报logo" class="logo">
-        <h1 class="main-title">早报图片生成器</h1>
+        <img src="logo.png" alt="早报logo" class="logo" onerror="this.style.display='none'"> <h1 class="main-title">早报图片生成器</h1>
     </div>
-    
+
     <div class="container">
         <div class="editor-panel">
             <h2>早报内容编辑</h2>
@@ -22,7 +21,7 @@
                 <input type="text" id="title" value="AI新动向社群早报">
             </div>
             <div class="form-group">
-                <label for="author">作者名称 (可选)</label>
+                <label for="author">副标题/作者 (可选)</label>
                 <input type="text" id="author" placeholder="留空则不显示">
             </div>
             <div class="form-group">
@@ -30,6 +29,19 @@
                     <input type="checkbox" id="show-date" checked>
                     <span>显示日期</span>
                 </label>
+            </div>
+            <div class="form-group">
+                <label>日期样式选择</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="date-style" value="text" checked>
+                        <span>文字样式</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="date-style" value="calendar">
+                        <span>日历样式</span>
+                    </label>
+                </div>
             </div>
             <div class="form-group">
                 <label for="footer-text">底部引流文案 (可选)</label>
@@ -50,21 +62,23 @@
         </div>
 
         <div class="preview-panel">
-            <div id="poster" class="poster">
-                <div class="poster-header">
-                    <h1 id="poster-title">AI新动向社群早报</h1>
-                    <div class="date-author">
-                        <span id="poster-date" class="date"></span>
-                        <span id="poster-author" class="author"></span>
-                    </div>
+            <div id="poster" class="poster date-style-text">
+                 <div class="poster-header">
+                    <div class="title-author-group">
+                         <h1 id="poster-title">AI新动向社群早报</h1>
+                         <span id="poster-author" class="author"></span> </div>
+                     <div id="poster-date-container" class="calendar-date">
+                        </div>
                 </div>
+                 <div class="text-date-line">
+                     <span id="poster-date-text" class="date-text"></span> </div>
+
                 <div class="divider"></div>
                 <div id="poster-content" class="poster-content"></div>
                 <div class="divider"></div>
                 <div class="poster-footer">
                     <span id="poster-footer-text" class="footer-text"></span>
-                    <img id="poster-qr-code" class="qr-code" src="" alt="社群二维码" style="display:none;">
-                </div>
+                    <img id="poster-qr-code" class="qr-code" src="" alt="社群二维码" style="display:none;" onerror="this.style.display='none'; this.alt='二维码加载失败';"> </div>
             </div>
             <button id="save-btn">保存为图片</button>
         </div>
